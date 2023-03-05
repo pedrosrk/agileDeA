@@ -5,6 +5,12 @@ class dataBase ():
     self.mydb = mysql.connector.connect(host="localhost", user="root", password="1512", database="agilim")
     self.mycursor = self.mydb.cursor()
   
+  def get_users(self):
+    query = "SELECT * FROM users"
+    self.mycursor.execute(query)
+    users = self.mycursor.fetchall()
+    return users
+
   def extractFellingList(self, tablename):
     self.mycursor.execute("SELECT felling FROM " + tablename)
     myresult = self.mycursor.fetchall()
@@ -91,4 +97,4 @@ class dataBase ():
 
 if __name__ == '__main__':
     db = dataBase()
-    print(db.extractFellingList('instances'))
+    print(db.get_users())
