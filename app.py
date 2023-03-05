@@ -7,7 +7,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 
-class dataAnalisis:
+class dataAnalysis:
   def __init__(self, text = "I love the computer sicence", model = "Default"):
     self.aglDB = db() # Agilim's database
     self.text = text
@@ -88,7 +88,7 @@ class dataAnalisis:
     return r
 
 if __name__ == '__main__':
-  dados = dataAnalisis()
+  dados = dataAnalysis()
   print(dados.getText())
   print(dados.sentimentMultinomialNBModel())
   print(dados.getText())
