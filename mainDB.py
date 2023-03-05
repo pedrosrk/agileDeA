@@ -1,16 +1,66 @@
 import mysql.connector
+from cryptography.fernet import Fernet
 
 class dataBase ():
   def __init__(self):
     self.mydb = mysql.connector.connect(host="localhost", user="root", password="1512", database="agilim")
     self.mycursor = self.mydb.cursor()
   
+  # Get all users [Table: users]
   def get_users(self):
     query = "SELECT * FROM users"
     self.mycursor.execute(query)
     users = self.mycursor.fetchall()
     return users
+  
+  # Get a single user by user_id [Table: users]
+  def get_user(self, user_id):
+    query = "SELECT * FROM users WHERE id = %s"
+    self.mycursor.execute(query, (user_id,))
+    user = self.mycursor.fetchone()
+    return user
+  
+  # Update a single user by user_id [Table: users]
+  def update_user(self, user_id, newUser):
+    user = self.get_user(user_id)
+    if user:
+      query = "UPDATE users SET name = %s, email = %s WHERE id = %s"
+      values = (newUser['name'], newUser['email'], user_id)
+      self.mycursor.execute(query, values)
+      self.mydb.commit()
+      return values
+    else:
+       return 'User does not exist!'
+    
+  # Deleate a single user by user_id [Table: users]
+  def delete_user(self, user_id):
+    user = self.get_user(user_id)
+    if user:
+      query = "DELETE FROM users WHERE id = %s"
+      self.mycursor.execute(query, (user_id,))
+      self.mydb.commit()
+      return user
+    else:
+       return 'User does not exist!'
+    
+  def create_user(self, data):
+    query = "SELECT * FROM users WHERE name = %s"
+    self.mycursor.execute(query, (data['name'],))
+    user = self.mycursor.fetchone()
+    if user:
+       return {'message': 'Username already exist!'}
+    else:
+      query = "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)"
+      password = data['password']
+      key = Fernet.generate_key()
+      fernet = Fernet(key)
+      encMessage = fernet.encrypt(password.encode())
+      values = (data['name'], data['email'], encMessage)
+      self.mycursor.execute(query, values)
+      self.mydb.commit()
+      return {'message': 'New user created!'}
 
+  # [Table: instances]
   def extractFellingList(self, tablename):
     self.mycursor.execute("SELECT felling FROM " + tablename)
     myresult = self.mycursor.fetchall()
