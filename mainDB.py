@@ -4,6 +4,39 @@ class dataBase ():
   def __init__(self):
     self.mydb = mysql.connector.connect(host="localhost", user="root", password="1512", database="agilim")
     self.mycursor = self.mydb.cursor()
+  
+  def extractFellingList(self, tablename):
+    self.mycursor.execute("SELECT felling FROM " + tablename)
+    myresult = self.mycursor.fetchall()
+    axis = []
+    for x in myresult:
+      axis.append(x[0])
+    return axis
+  
+  def extractDeliveryList(self, tablename):
+    self.mycursor.execute("SELECT delivery FROM " + tablename)
+    myresult = self.mycursor.fetchall()
+    axis = []
+    for x in myresult:
+      axis.append(x[0])
+    return axis
+  
+  def extractFellingListInt(self, tablename):
+    self.mycursor.execute("SELECT felling FROM " + tablename)
+    myresult = self.mycursor.fetchall()
+    classes = []
+    for aux in myresult:
+      c1 = aux[0]
+      add = True
+      for i in classes:
+        if i == c1:
+          add = False
+      if (add):
+        classes.append(c1)
+    axis = []
+    for x in myresult:
+      axis.append(classes.index(x[0]))
+    return axis
 
   def init_dataBase(self, tableName):
       self.mycursor.execute(
@@ -58,4 +91,4 @@ class dataBase ():
 
 if __name__ == '__main__':
     db = dataBase()
-    db.showInstances('instances')
+    print(db.extractFellingList('instances'))
