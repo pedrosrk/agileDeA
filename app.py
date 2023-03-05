@@ -2,7 +2,6 @@ import mysql.connector
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
-import os #os.system("pause")
 
 class dataAnalisis:
   def __init__(self):
@@ -11,8 +10,8 @@ class dataAnalisis:
     self.mydb = mydb
     self.mycursor = mycursor
 
-  def extractFellingList(self):
-    self.mycursor.execute("SELECT felling FROM tablename")
+  def extractFellingList(self, tablename):
+    self.mycursor.execute("SELECT felling FROM " + tablename)
     myresult = self.mycursor.fetchall()
     axis = []
     for x in myresult:
@@ -75,7 +74,5 @@ class dataAnalisis:
 
 if __name__ == '__main__':
   dados = dataAnalisis()
-  #dados.correlationFellingDeliveryBar()
-  #dados.correlationFellingDeliveryScatter()
-  print(dados.corrDeliveryAndFelling())
+  print(dados.extractFellingList('instances'))
   
