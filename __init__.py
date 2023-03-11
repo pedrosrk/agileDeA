@@ -16,7 +16,6 @@ def portugueseModel():
 @app.route('/english', methods=['POST'])
 def englishModel():
     data = request.get_json()
-    print(data)
     sentimentAnalysis = deA(data['text'])
     result = sentimentAnalysis.englishSentiment()
     return jsonify(result)
