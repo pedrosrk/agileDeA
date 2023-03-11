@@ -16,6 +16,7 @@ def portugueseModel():
 @app.route('/english', methods=['POST'])
 def englishModel():
     data = request.get_json()
+    print(data)
     sentimentAnalysis = deA(data['text'])
     result = sentimentAnalysis.englishSentiment()
     return jsonify(result)
@@ -60,8 +61,8 @@ def create_user():
 
 def production():
   from waitress import serve
-  serve(app, host="0.0.0.0", port=5000)
+  serve(app, host="0.0.0.0", port=3000)
 
 if __name__ == "__main__":
-    #app.run(debug=True, host='0.0.0.0')
+    #app.run(debug=True, host='0.0.0.0', port=3000)
     production()
