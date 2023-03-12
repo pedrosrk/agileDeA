@@ -1,5 +1,5 @@
 import mysql.connector
-from cryptography.fernet import Fernet
+import bcrypt
 
 class dataBase ():
   def __init__(self):
@@ -51,11 +51,10 @@ class dataBase ():
        return {'message': 'Username already exist!'}
     else:
       query = "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)"
-      password = data['password']
-      key = Fernet.generate_key()
-      fernet = Fernet(key)
-      encMessage = fernet.encrypt(password.encode())
-      values = (data['name'], data['email'], encMessage)
+      password = data['password'].encode('utf-8')
+      salt = bcrypt.gensalt(8)
+      hash = bcrypt.hashpw(password, salt)
+      values = (data['name'], data['email'], hash)
       self.mycursor.execute(query, values)
       self.mydb.commit()
       return {'message': 'New user created!'}
@@ -144,7 +143,50 @@ class dataBase ():
               else:
                   answers[ind+1] = answers[ind] + answers[ind + 1]
                   ind = ind + 1
+  
+  def log_user(self, data):
+    query = "SELECT * FROM users WHERE name = %s AND email = %s"
+    self.mycursor.execute(query, (data['name'], data['email']))
+    user = self.mycursor.fetchone()
+    if user:
+      userPassword = data['password']
+      userBytes = userPassword.encode('utf-8')
+      hash = user[3].encode('utf-8')
+      result = bcrypt.checkpw(userBytes, hash) 
+      if result:
+        return {'message': 'User Logged'}
+      else:
+        return {'message': 'Password fail'}
 
+    else:
+      return {'message': 'Username does not exist!'}
+
+  def unit_test_hashPass(self, user_id):
+    user = db.get_user(user_id)
+    hash = user[3].encode('utf-8')
+    #print(hash)
+    if user_id == 5:
+      userPassword = 'test02'
+    if user_id == 6:
+       userPassword = 'testim'
+    # encoding user password
+    userBytes = userPassword.encode('utf-8')
+    # checking password
+    result = bcrypt.checkpw(userBytes, hash)
+    return result
+  
+  def unit_test_logUser(self):
+    db = dataBase()
+    data = {
+       "name": "testim",
+       "email": "testim@znet.com.br",
+       "password": "testim"
+    }
+    return db.log_user(data)['message'] == 'User Logged'
+  
 if __name__ == '__main__':
     db = dataBase()
-    print(db.get_users())
+    print(db.unit_test_logUser())
+
+
+    
